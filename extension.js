@@ -14,6 +14,8 @@ const INDICATOR_ICON_NAME = 'view-reveal-symbolic';
 class AudioPlayer {
     constructor() {
         this._pipeline = null;
+        this._bus = null;
+        this._busWatchId = null;
     }
 
     play(filePath) {
@@ -30,6 +32,7 @@ class AudioPlayer {
 
         this._pipeline = Gst.ElementFactory.make('playbin', 'look-away-player');
         this._pipeline.uri = `file://${filePath}`;
+        this._watchPipelineBus();
         this._pipeline.set_state(Gst.State.PLAYING);
     }
 
@@ -37,8 +40,25 @@ class AudioPlayer {
         if (!this._pipeline)
             return;
 
+        if (this._busWatchId) {
+            this._bus.remove_signal_watch();
+            this._bus.disconnect(this._busWatchId);
+            this._busWatchId = null;
+        }
+
+        this._bus = null;
         this._pipeline.set_state(Gst.State.NULL);
         this._pipeline = null;
+    }
+
+    _watchPipelineBus() {
+        this._bus = this._pipeline.get_bus();
+        this._bus.add_signal_watch();
+        this._busWatchId = this._bus.connect('message', (_bus, message) => {
+            const type = message.type;
+            if (type === Gst.MessageType.EOS || type === Gst.MessageType.ERROR)
+                this.stop();
+        });
     }
 }
 

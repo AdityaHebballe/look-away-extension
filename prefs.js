@@ -6,19 +6,40 @@ import Gtk from 'gi://Gtk';
 import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 let previewPipeline = null;
+let previewBus = null;
+let previewBusWatchId = null;
 
 function playPreview(filePath) {
     if (!Gst.is_initialized())
         Gst.init(null);
 
-    if (previewPipeline) {
-        previewPipeline.set_state(Gst.State.NULL);
-        previewPipeline = null;
-    }
+    stopPreview();
 
     previewPipeline = Gst.ElementFactory.make('playbin', 'look-away-preview-player');
     previewPipeline.uri = `file://${filePath}`;
+    previewBus = previewPipeline.get_bus();
+    previewBus.add_signal_watch();
+    previewBusWatchId = previewBus.connect('message', (_bus, message) => {
+        const type = message.type;
+        if (type === Gst.MessageType.EOS || type === Gst.MessageType.ERROR)
+            stopPreview();
+    });
     previewPipeline.set_state(Gst.State.PLAYING);
+}
+
+function stopPreview() {
+    if (!previewPipeline)
+        return;
+
+    if (previewBusWatchId) {
+        previewBus.remove_signal_watch();
+        previewBus.disconnect(previewBusWatchId);
+        previewBusWatchId = null;
+    }
+
+    previewBus = null;
+    previewPipeline.set_state(Gst.State.NULL);
+    previewPipeline = null;
 }
 
 export default class LookAwayPreferences extends ExtensionPreferences {
