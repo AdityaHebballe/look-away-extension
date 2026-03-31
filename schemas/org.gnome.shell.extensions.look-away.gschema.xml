@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.look-away" path="/org/gnome/shell/extensions/look-away/">
+    <key name="interval" type="i">
+      <default>20</default>
+      <summary>Interval in minutes</summary>
+      <description>The time interval in minutes before reminding you to look away.</description>
+    </key>
+    <key name="show-osd" type="b">
+      <default>true</default>
+      <summary>Show OSD</summary>
+      <description>Whether to show an On-Screen Display reminder.</description>
+    </key>
+    <key name="show-notification" type="b">
+      <default>false</default>
+      <summary>Show notification</summary>
+      <description>Whether to also show a GNOME notification reminder.</description>
+    </key>
+    <key name="play-audio" type="b">
+      <default>true</default>
+      <summary>Play audio</summary>
+      <description>Whether to play the reminder sound audibly.</description>
+    </key>
+  </schema>
+</schemalist>

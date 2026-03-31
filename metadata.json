@@ -1,0 +1,15 @@
+{
+    "uuid": "look-away@aditya.github.com",
+    "name": "Look Away!",
+    "description": "Periodically reminds you to look away from the screen using an OSD and an audio reminder sound.",
+    "shell-version": [
+        "45",
+        "46",
+        "47",
+        "48",
+        "49",
+        "50"
+    ],
+    "url": "https://github.com/AdityaHebballe/look-away-extension",
+    "settings-schema": "org.gnome.shell.extensions.look-away"
+}
